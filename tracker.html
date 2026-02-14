@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-soft: #e3f2fd;
+        --primary-color: #0d6efd;
+        --card-radius: 16px;
+    }
+    .tracker-section {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 76px);
+    }
+    .card-modern {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: white;
+        overflow: hidden;
+    }
+    .card-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+    .stat-icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+    .quick-track-btn {
+        border: 1px solid #eee;
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem 1rem;
+        width: 100%;
+        height: 100%;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+    }
+    .quick-track-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        border-color: transparent;
+        background: white;
+    }
+    .quick-track-btn i {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        transition: transform 0.2s;
+    }
+    .quick-track-btn:hover i {
+        transform: scale(1.1);
+    }
+    .timeline-wrapper {
+        position: relative;
+        padding-left: 20px;
+    }
+    .timeline-wrapper::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+        border-radius: 2px;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+        padding-left: 25px;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: -9px;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 4px solid var(--primary-color);
+        z-index: 1;
+    }
+    .timeline-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        border: 1px solid #f0f0f0;
+    }
+</style>
+
+<section class="tracker-section py-5">
+  <div class="container">
+    <!-- Header & Date -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <div>
+        <h2 class="fw-bold text-dark mb-1"><i class="fas fa-baby me-2 text-primary"></i>Baby Tracker</h2>
+        <p class="text-muted mb-0">Daily overview for {{ current_date }}</p>
+      </div>
+      <div>
+        <form action="/tracker" method="get" class="d-flex gap-2 bg-white p-2 rounded-pill shadow-sm">
+          <input type="date" name="date" class="form-control border-0 bg-transparent py-0" value="{{ current_date }}">
+          <button type="submit" class="btn btn-primary rounded-pill px-4">Go</button>
+        </form>
+      </div>
+    </div>
+    <!-- Analysis Button / Result -->
+    <div class="d-flex justify-content-end mb-4">
+      <button id="analyzeBtn" class="btn btn-outline-primary me-3">Analyze Day</button>
+    </div>
+    <div id="analysisResult" style="display:none" class="card-modern p-4 mb-4">
+      <h5 class="fw-bold mb-2">AI Analysis</h5>
+      <div id="analysisContent" class="small text-secondary"></div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4">
+        <div class="card-modern h-100">
+          <div class="card-body d-flex align-items-center p-4">
+            <div class="stat-icon-box bg-primary bg-opacity-10 text-primary">
+              <i class="fas fa-moon"></i>
+            </div>
+            <div>
+              <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Sleep</h6>
+              <h3 class="mb-0 fw-bold">{{ stats.sleep_display }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-modern h-100">
+          <div class="card-body d-flex align-items-center p-4">
+            <div class="stat-icon-box bg-info bg-opacity-10 text-info">
+              <i class="fas fa-baby-bottle"></i>
+            </div>
+            <div>
+              <h6 class="text-muted small text-uppercase fw-bold mb-1">Feeds Today</h6>
+              <h3 class="mb-0 fw-bold">{{ stats.feed_count }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-modern h-100">
+          <div class="card-body d-flex align-items-center p-4">
+            <div class="stat-icon-box bg-warning bg-opacity-10 text-warning">
+              <i class="fas fa-baby"></i>
+            </div>
+            <div>
+              <h6 class="text-muted small text-uppercase fw-bold mb-1">Diaper Changes</h6>
+              <h3 class="mb-0 fw-bold">{{ stats.diaper_count }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Left Column: Quick Log & Activity Feed -->
+      <div class="col-lg-8">
+        <!-- Quick Log -->
+        <div class="card-modern mb-5">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-4 text-secondary">Quick Log Activity</h5>
+            
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Feeding">
+                  <i class="fas fa-bottle-water text-info"></i>
+                  <span class="fw-bold small">Feeding</span>
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Diaper Change">
+                  <i class="fas fa-layer-group text-warning"></i>
+                  <span class="fw-bold small">Diaper</span>
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Sleep">
+                  <i class="fas fa-moon text-primary"></i>
+                  <span class="fw-bold small">Sleep</span>
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Crying">
+                  <i class="fas fa-face-sad-tear text-danger"></i>
+                  <span class="fw-bold small">Crying</span>
+                </button>
+              </div>
+              <!-- New Trackers -->
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Bath">
+                  <i class="fas fa-bath text-success"></i>
+                  <span class="fw-bold small">Bath</span>
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Playtime">
+                  <i class="fas fa-shapes text-secondary"></i>
+                  <span class="fw-bold small">Playtime</span>
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Medicine">
+                  <i class="fas fa-pills text-danger"></i>
+                  <span class="fw-bold small">Medicine</span>
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button class="quick-track-btn quick-track" data-activity="Solid Food">
+                  <i class="fas fa-utensils text-warning"></i>
+                  <span class="fw-bold small">Solid Food</span>
+                </button>
+              </div>
+            </div>
+            
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="fas fa-pen text-muted"></i></span>
+                <input type="text" id="notes" class="form-control bg-light border-start-0" placeholder="Add optional notes (e.g., 100ml, 38°C temp, etc.) before clicking an activity...">
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0 text-secondary">Today's Timeline</h5>
+        </div>
+        
+        {% if activities %}
+          <div class="timeline-wrapper ms-2">
+            {% for activity in activities %}
+            <div class="timeline-item">
+              <div class="timeline-dot 
+                {% if activity.type == 'Sleep' %}border-primary
+                {% elif activity.type == 'Feeding' %}border-info
+                {% elif activity.type == 'Diaper Change' %}border-warning
+                {% elif activity.type == 'Crying' %}border-danger
+                {% else %}border-success{% endif %}">
+              </div>
+              <div class="timeline-card">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="d-flex">
+                    <div class="me-3 text-center" style="width: 40px;">
+                        <i class="{{ activity.icon }} fa-lg text-muted mt-1"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-1 fw-bold text-dark">{{ activity.type }}</h6>
+                      <p class="mb-1 small text-muted">
+                        <i class="far fa-clock me-1"></i> {{ activity.start_time }}
+                        {% if activity.end_time %} - {{ activity.end_time }} <span class="badge bg-light text-dark border ms-2">{{ activity.duration }}</span>{% endif %}
+                      </p>
+                      {% if activity.notes %}
+                        <p class="mb-0 small text-secondary bg-light p-2 rounded mt-2"><i class="fas fa-quote-left me-2 opacity-25"></i>{{ activity.notes }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    {% if activity.is_active %}
+                      <button class="btn btn-sm btn-success end-tracker rounded-pill px-3" data-id="{{ activity.id }}">End</button>
+                    {% endif %}
+                    <button class="btn btn-sm btn-light text-danger delete-tracker rounded-circle" data-id="{{ activity.id }}" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="card-modern p-5 text-center text-muted">
+            <i class="fas fa-clipboard-list fa-3x mb-3 opacity-25"></i>
+            <p class="mb-0">No activities logged for this date.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Right Column: Reminders -->
+      <div class="col-lg-4">
+        <div class="card-modern h-100">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-4 text-secondary"><i class="fas fa-bell text-warning me-2"></i>Reminders</h5>
+            
+            <!-- Add Reminder Form -->
+            <form id="reminderForm" class="mb-4 bg-light p-3 rounded-3">
+              <div class="mb-2">
+                <label class="small text-muted fw-bold">Time</label>
+                <input type="time" id="remindTime" class="form-control border-0" required>
+              </div>
+              <div class="mb-3">
+                <label class="small text-muted fw-bold">Message</label>
+                <input type="text" id="remindMsg" class="form-control border-0" placeholder="e.g. Medicine, Doctor appt" required>
+              </div>
+              <button type="submit" class="btn btn-warning w-100 text-white rounded-pill fw-bold">Set Reminder</button>
+            </form>
+
+            <hr class="opacity-10 my-4">
+
+            <!-- Reminder List -->
+            <h6 class="text-muted small text-uppercase fw-bold mb-3">Upcoming</h6>
+            {% if reminders %}
+              <div class="d-flex flex-column gap-3">
+                {% for rem in reminders %}
+                <div class="p-3 bg-white border rounded-3 shadow-sm d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-bold text-dark">{{ rem[3] }}</div>
+                    <div class="small text-primary"><i class="far fa-clock me-1"></i> {{ rem[2] }}</div>
+                  </div>
+                  <button class="btn btn-sm btn-light text-danger delete-reminder rounded-circle" data-id="{{ rem[0] }}">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="text-center py-4">
+                  <p class="small text-muted mb-0">No reminders set.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function handleFetchError(err){
+  const msg = err && err.message ? err.message : (err || 'Unknown error');
+  if (msg.indexOf && (msg.indexOf('<!doctype') !== -1 || msg.indexOf('<html') !== -1)){
+    alert('Session expired or redirect detected. Please log in.');
+    window.location = '/login';
+    return;
+  }
+  alert('Error: ' + msg);
+}
+// reuse same JS as dashboard quick actions
+document.querySelectorAll('.quick-track').forEach(btn => {
+  btn.addEventListener('click', function(){
+    const activity = this.dataset.activity;
+    const notes = document.getElementById('notes').value;
+    fetch('/tracker/add',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:`activity_type=${encodeURIComponent(activity)}&notes=${encodeURIComponent(notes)}`
+    })
+    .then(res => {
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) return res.json();
+      return res.text().then(txt => { throw new Error('Invalid JSON response: ' + txt); });
+    })
+    .then(data=>{ if(data.success){ location.reload(); } else { alert(data.error || 'Error'); } })
+    .catch(handleFetchError)
+  })
+})
+
+document.querySelectorAll('.end-tracker').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    const id = this.dataset.id;
+    fetch(`/tracker/end/${id}`,{method:'POST'})
+    .then(res => {
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) return res.json();
+      return res.text().then(txt => { throw new Error('Invalid JSON response: ' + txt); });
+    })
+    .then(d=>{ if(d.success) location.reload(); else alert(d.error||'Error'); })
+    .catch(handleFetchError)
+  })
+})
+
+document.querySelectorAll('.delete-tracker').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    if(!confirm('Delete this entry?')) return;
+    const id = this.dataset.id;
+    fetch(`/tracker/delete/${id}`,{method:'POST'})
+    .then(res => {
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) return res.json();
+      return res.text().then(txt => { throw new Error('Invalid JSON response: ' + txt); });
+    })
+    .then(d=>{ if(d.success) location.reload(); else alert(d.error||'Error'); })
+    .catch(handleFetchError)
+  })
+})
+
+// Reminder Logic
+document.getElementById('reminderForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const time = document.getElementById('remindTime').value;
+  const msg = document.getElementById('remindMsg').value;
+  
+  fetch('/tracker/reminder/add', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `remind_time=${encodeURIComponent(time)}&message=${encodeURIComponent(msg)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.success) location.reload();
+    else alert(data.error);
+  })
+  .catch(handleFetchError);
+});
+
+document.querySelectorAll('.delete-reminder').forEach(btn => {
+  btn.addEventListener('click', function(){
+    if(!confirm('Remove this reminder?')) return;
+    const id = this.dataset.id;
+    fetch(`/tracker/reminder/delete/${id}`, {method: 'POST'})
+    .then(res => res.json())
+    .then(data => {
+      if(data.success) location.reload();
+      else alert(data.error);
+    })
+    .catch(handleFetchError);
+  });
+});
+</script>
+
+<script>
+// Analysis fetcher
+document.getElementById('analyzeBtn').addEventListener('click', function(){
+  const params = new URLSearchParams(window.location.search);
+  const date = params.get('date') || document.querySelector('input[name="date"]').value || '';
+  const url = `/tracker/analyze${date ? '?date=' + encodeURIComponent(date) : ''}`;
+  const resultCard = document.getElementById('analysisResult');
+  const content = document.getElementById('analysisContent');
+  resultCard.style.display = 'block';
+  content.innerHTML = 'Analyzing...';
+
+  fetch(url)
+    .then(res => res.json())
+    .then(d => {
+      if(!d.success){ content.innerHTML = 'Analysis unavailable.'; return; }
+      const analysis = d.analysis || {};
+      const lines = [];
+      if(analysis.insights && analysis.insights.length){
+        analysis.insights.forEach(item => {
+          lines.push(`<strong>${item[0]}:</strong> ${item[1]}`);
+        });
+      }
+      if(analysis.summary) lines.push(`<em>${analysis.summary}</em>`);
+      content.innerHTML = lines.join('<br>');
+    })
+    .catch(err => { content.innerHTML = 'Error fetching analysis'; console.error(err); });
+});
+</script>
+
+{% endblock %}

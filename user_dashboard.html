@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-soft: #e3f2fd;
+        --primary-color: #0d6efd;
+        --card-radius: 16px;
+    }
+    .dashboard-section {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 76px); /* Adjust based on navbar */
+    }
+    .card-modern {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: white;
+        overflow: hidden;
+    }
+    .card-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+    .profile-header-bg {
+        height: 100px;
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    }
+    .profile-avatar {
+        width: 90px;
+        height: 90px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -45px;
+        border: 4px solid white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-size: 2.5rem;
+        color: #ff6b6b;
+    }
+    .quick-action-card {
+        text-align: center;
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+    }
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+    .card-modern:hover .quick-action-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    .status-badge {
+        padding: 0.5em 1em;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+    .table-modern th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #8898aa;
+        border-bottom-width: 1px;
+    }
+    .table-modern td {
+        vertical-align: middle;
+        padding: 1rem 0.75rem;
+    }
+</style>
+
+<section class="dashboard-section py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Dashboard</h2>
+                <p class="text-muted mb-0">Welcome back, {{ user.parent_name }}!</p>
+            </div>
+            <div class="d-none d-md-block">
+                <span class="text-muted small"><i class="fas fa-calendar-alt me-1"></i> Today is {{ current_date if current_date else 'a beautiful day' }}</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+                <!-- Profile Card -->
+                <div class="card-modern mb-4">
+                    <div class="profile-header-bg"></div>
+                    <div class="card-body text-center pt-0">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="profile-avatar">
+                                <i class="fas fa-baby"></i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold mb-1">{{ user.baby_name }}</h4>
+                        <p class="text-muted small mb-3">{{ user.baby_age }} months old • Born {{ user.baby_dob }}</p>
+                        
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                            <span class="badge bg-light text-dark border rounded-pill px-3">Parent: {{ user.parent_name }}</span>
+                        </div>
+                        
+                        <hr class="opacity-10 my-3">
+                        
+                        <div class="text-start px-2">
+                            <div class="d-flex align-items-center mb-2 text-muted small">
+                                <i class="fas fa-envelope w-25px text-center me-2"></i> {{ user.email }}
+                            </div>
+                            <div class="d-flex align-items-center mb-2 text-muted small">
+                                <i class="fas fa-phone w-25px text-center me-2"></i> {{ user.phone }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="/user/logout" class="btn btn-outline-danger btn-sm w-100 rounded-pill">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subscription Status -->
+                <div class="card-modern mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">Subscription Status</h6>
+                        {% if is_subscribed %}
+                            <div class="d-flex align-items-center p-3 bg-success bg-opacity-10 rounded-3 border border-success border-opacity-10">
+                                <div class="me-3 text-success"><i class="fas fa-check-circle fa-2x"></i></div>
+                                <div>
+                                    <h6 class="fw-bold text-success mb-0">Premium Active</h6>
+                                    <small class="text-success text-opacity-75">Full access granted</small>
+                                </div>
+                            </div>
+                        {% elif subscription_pending %}
+                            <div class="d-flex align-items-center p-3 bg-warning bg-opacity-10 rounded-3 border border-warning border-opacity-10">
+                                <div class="me-3 text-warning"><i class="fas fa-clock fa-2x"></i></div>
+                                <div>
+                                    <h6 class="fw-bold text-warning mb-0">Approval Pending</h6>
+                                    <small class="text-warning text-opacity-75">Verifying payment...</small>
+                                </div>
+                            </div>
+                            <span id="sub-status-badge" class="d-none"></span>
+                        {% else %}
+                            <div class="text-center">
+                                <div class="mb-3 text-primary"><i class="fas fa-crown fa-3x"></i></div>
+                                <h5 class="fw-bold">Go Premium</h5>
+                                <p class="text-muted small mb-3">Unlock expert video guides and direct doctor consultations.</p>
+                                <a href="/subscribe" class="btn btn-primary w-100 rounded-pill">Subscribe for ₹99/mo</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-8">
+                {% if success_message %}
+                <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert">
+                    <i class="fas fa-check-circle me-2"></i> {{ success_message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                <!-- Quick Actions -->
+                <h5 class="fw-bold mb-3 text-secondary">Quick Access</h5>
+                <div class="row g-3 mb-5">
+                    <div class="col-6 col-md-3">
+                        <a href="/tracker" class="card-modern quick-action-card">
+                            <div class="quick-action-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                            <span class="fw-bold small">Tracker</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/tips" class="card-modern quick-action-card">
+                            <div class="quick-action-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <span class="fw-bold small">Tips</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/shop" class="card-modern quick-action-card">
+                            <div class="quick-action-icon bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <span class="fw-bold small">Shop</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/contact" class="card-modern quick-action-card">
+                            <div class="quick-action-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <span class="fw-bold small">Support</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Appointments -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Appointments</h5>
+                    <a href="/contact" class="btn btn-sm btn-primary rounded-pill px-3"><i class="fas fa-plus me-1"></i> Book New</a>
+                </div>
+                <div class="card-modern mb-5">
+                    <div class="card-body p-0">
+                        {% if appointments and appointments|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-modern table-hover mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4">Doctor</th>
+                                            <th>Date & Time</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th class="text-end pe-4">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for appt in appointments %}
+                                        <tr>
+                                            <td class="ps-4 fw-bold text-dark">{{ appt[1] }}</td>
+                                            <td class="text-muted small">{{ appt[2] }}</td>
+                                            <td>
+                                                {% if appt[3] == 'Video' %}
+                                                <span class="badge bg-info bg-opacity-10 text-info rounded-pill"><i class="fas fa-video me-1"></i> Video</span>
+                                                {% else %}
+                                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill"><i class="fas fa-phone me-1"></i> Voice</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if appt[4] == 'Pending' %}
+                                                <span class="status-badge bg-warning bg-opacity-10 text-warning">Pending</span>
+                                                {% elif appt[4] == 'Confirmed' %}
+                                                <span class="status-badge bg-success bg-opacity-10 text-success">Confirmed</span>
+                                                {% elif appt[4] == 'Completed' %}
+                                                <span class="status-badge bg-secondary bg-opacity-10 text-secondary">Completed</span>
+                                                {% elif appt[4] == 'Cancelled' %}
+                                                <span class="status-badge bg-danger bg-opacity-10 text-danger">Cancelled</span>
+                                                {% else %}
+                                                <span class="badge bg-light text-dark">{{ appt[4] }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                {% if appt[4] == 'Confirmed' and appt[3] == 'Video' and appt[5] %}
+                                                <a href="{{ appt[5] }}" target="_blank" class="btn btn-sm btn-primary rounded-pill px-3">
+                                                    Join
+                                                </a>
+                                                {% elif appt[4] == 'Completed' and appt[6] %}
+                                                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#notesModal{{ appt[0] }}">
+                                                    Notes
+                                                </button>
+                                                <!-- Notes Modal -->
+                                                <div class="modal fade" id="notesModal{{ appt[0] }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Doctor's Notes</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body text-start">
+                                                                <p class="mb-0" style="white-space: pre-wrap;">{{ appt[6] }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <span class="text-muted small">-</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <div class="text-muted mb-2"><i class="fas fa-calendar-plus fa-2x opacity-25"></i></div>
+                                <p class="text-muted small mb-0">No appointments scheduled.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Recent Messages</h5>
+                    <a href="/contact" class="btn btn-sm btn-outline-secondary rounded-pill px-3">View All</a>
+                </div>
+                <div class="card-modern">
+                    <div class="card-body p-0">
+                        {% if user_contacts and user_contacts|length > 0 %}
+                            <div class="list-group list-group-flush">
+                                {% for msg in user_contacts[:3] %}
+                                <div class="list-group-item border-0 border-bottom p-4">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="badge bg-light text-dark">You</span>
+                                        <small class="text-muted">{{ msg[4] }}</small>
+                                    </div>
+                                    <p class="text-dark mb-2 small">{{ msg[3] }}</p>
+                                    
+                                    {% if msg[5] %}
+                                        <div class="mt-3 ps-3 border-start border-3 border-success bg-light p-2 rounded-end">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <small class="fw-bold text-success">Admin Reply</small>
+                                                <small class="text-muted" style="font-size: 0.7rem;">{{ msg[6] or '' }}</small>
+                                            </div>
+                                            <p class="mb-0 small text-muted">{{ msg[5] }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <div class="text-muted mb-2"><i class="fas fa-envelope-open fa-2x opacity-25"></i></div>
+                                <p class="text-muted small mb-0">No messages yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Subscription pending polling: check every 8 seconds
+    document.addEventListener('DOMContentLoaded', function(){
+        fetch('/subscription_status')
+        .then(res => res.json())
+        .then(data => {
+            const pending = data.subscription_pending || 0;
+            if (pending) {
+                const pollInterval = 8000;
+                const poll = setInterval(() => {
+                    fetch('/subscription_status')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.is_subscribed && Number(data.is_subscribed) === 1) {
+                            clearInterval(poll);
+                            try { alert('Your subscription has been approved! Access to videos and contact is now granted.'); } catch(e){}
+                            const badge = document.getElementById('sub-status-badge');
+                            if (badge) {
+                                badge.className = 'badge bg-success';
+                                badge.textContent = 'Subscribed';
+                            }
+                            setTimeout(() => location.reload(), 800);
+                        }
+                    })
+                    .catch(err => console.log('Poll error:', err));
+                }, pollInterval);
+            }
+        })
+        .catch(err => console.log('Initial status check failed:', err));
+    });
+</script>
+{% endblock %}

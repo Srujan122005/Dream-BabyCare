@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Dream Baby Care</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+        }
+        .login-image {
+            width: 45%;
+            background: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+            position: relative;
+            min-height: 600px;
+        }
+        .login-image::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+        }
+        .login-form-container {
+            width: 55%;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+        }
+        .brand-logo {
+            color: #ff6b6b;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-control, .form-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
+            font-size: 14px;
+        }
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+            border-color: #ff6b6b;
+            background-color: white;
+        }
+        .btn-primary {
+            background-color: #ff6b6b;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        .btn-primary:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #adb5bd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        @media (max-width: 992px) {
+             .login-card {
+                max-width: 700px;
+            }
+        }
+        @media (max-width: 768px) {
+            .login-card {
+                flex-direction: column;
+                max-width: 450px;
+                margin: 0;
+            }
+            .login-image {
+                width: 100%;
+                height: 200px;
+                min-height: 200px;
+            }
+            .login-form-container {
+                width: 100%;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-image"></div>
+        <div class="login-form-container">
+            <a href="/" class="brand-logo">
+                <img src="https://res.cloudinary.com/duucdndfx/image/upload/v1767200335/WhatsApp_Image_2025-11-23_at_10.59.52_PM_nwqgbo.jpg" alt="Logo" width="40" height="40" class="rounded-circle"> Dream Baby Care
+            </a>
+            <h3 class="fw-bold mb-1">Create Account</h3>
+            <p class="text-muted mb-4">Join our community of happy parents.</p>
+            
+            {% if error %}
+            <div class="alert alert-danger py-2 small border-0 bg-danger bg-opacity-10 text-danger">
+                <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="{{ url_for('register') }}" method="POST">
+                
+                <div class="section-title">Parent Details</div>
+                
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Full Name *</label>
+                        <input type="text" name="parent_name" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="+91 98765...">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Email Address *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-envelope"></i></span>
+                        <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="parent@example.com" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Password *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-lock"></i></span>
+                        <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Address</label>
+                    <textarea name="address" class="form-control" rows="2" placeholder="Your residential address..."></textarea>
+                </div>
+
+                <div class="section-title mt-4">Baby Details</div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Baby Name *</label>
+                        <input type="text" name="baby_name" class="form-control" placeholder="Baby Name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Date of Birth *</label>
+                        <input type="date" name="baby_dob" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Preferred Language</label>
+                    <select name="language" class="form-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small">Already have an account? <a href="{{ url_for('login') }}" class="text-decoration-none fw-bold" style="color: #ff6b6b;">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Manage Doctors</h2>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+
+        <!-- Add Doctor Form -->
+        <div class="card shadow-sm mb-5">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Doctor</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_add_doctor') }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Doctor Name</label>
+                            <input type="text" name="name" class="form-control" required placeholder="e.g. Dr. Sarah Smith">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Specialization</label>
+                            <input type="text" name="specialization" class="form-control" required placeholder="e.g. Pediatrician">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email (for login)</label>
+                            <input type="email" name="email" class="form-control" required placeholder="doctor@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required placeholder="Set a password">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Image URL</label>
+                            <input type="url" name="image" class="form-control" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" name="phone" class="form-control" placeholder="+1234567890">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Video Call Link</label>
+                            <input type="url" name="video_link" class="form-control" placeholder="https://meet.google.com/...">
+                            <div class="form-text">Link for video consultations (Google Meet, Zoom, etc.)</div>
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save me-1"></i> Add Doctor</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Doctors List -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-user-md me-2"></i>Existing Doctors</h5>
+            </div>
+            <div class="card-body">
+                {% if doctors %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Contact Info</th>
+                                <th>Login Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doctor in doctors %}
+                            <tr>
+                                <td>
+                                    {% if doctor[5] %}
+                                    <img src="{{ doctor[5] }}" alt="{{ doctor[1] }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ doctor[1] }}</strong></td>
+                                <td>{{ doctor[2] }}</td>
+                                <td>
+                                    {% if doctor[6] %}<div><i class="fas fa-phone me-1 text-muted"></i> {{ doctor[6] }}</div>{% endif %}
+                                    {% if doctor[7] %}<div><i class="fas fa-video me-1 text-muted"></i> <a href="{{ doctor[7] }}" target="_blank">Video Link</a></div>{% endif %}
+                                </td>
+                                <td>{{ doctor[3] }}</td>
+                                <td>
+                                    <form action="{{ url_for('admin_delete_doctor', doctor_id=doctor[0]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this doctor?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-user-md fa-3x mb-3 opacity-50"></i>
+                    <p>No doctors added yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

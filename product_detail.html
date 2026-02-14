@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section>
+        <div class="container">
+            <div class="row g-4 align-items-start">
+                <div class="col-12 col-md-5">
+                    {% if product[4] %}
+                    <img src="{{ product[4] }}" class="img-fluid rounded shadow-sm" alt="{{ product[1] }}">
+                    {% else %}
+                    <div class="product-image rounded shadow-sm" style="height:320px; display:flex; align-items:center; justify-content:center;">Product Image</div>
+                    {% endif %}
+                </div>
+                <div class="col-12 col-md-7">
+                    <h2 class="mb-2">{{ product[1] }}</h2>
+                    {% if product[6] and product[6] < product[3] %}
+                    <p class="product-price h4 text-danger">{{ product[6]|inr }} <small class="text-muted text-decoration-line-through fs-6">{{ product[3]|inr }}</small></p>
+                    {% else %}
+                    <p class="product-price h4">{{ product[3]|inr }}</p>
+                    {% endif %}
+                    <p class="text-muted">{{ product[2] }}</p>
+                    <p><strong>Category:</strong> {{ product[5] }}</p>
+                    <div class="mt-4 d-flex gap-2">
+                        <a href="/add_to_cart/{{ product[0] }}" class="btn btn-success btn-lg" target="_blank">Buy on Blinkit</a>
+                        <a href="/shop" class="btn btn-outline-secondary btn-lg">Back to Shop</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

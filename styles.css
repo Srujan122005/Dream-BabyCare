@@ -1,0 +1,53 @@
+:root{
+  --brand:#7c5cbf;
+  --brand-dark:#5d4a80;
+  --muted:#6c757d;
+  --bg:#f8f6fb;
+}
+
+/* Basic page layout */
+body{
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--bg);
+  color: #222;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.text-purple{ color:var(--brand-dark) }
+
+main{ flex:1 }
+
+.section-title{ color:var(--brand-dark); font-weight:700; margin-bottom:1.25rem }
+
+/* Hero */
+.hero{ padding:5rem 0; background: linear-gradient(135deg, rgba(124,92,191,0.06), rgba(201,182,228,0.08)); }
+.hero .hero-content{ text-align:center; max-width:900px; margin:0 auto }
+.hero h1{ font-size:2.4rem; color:var(--brand-dark); margin-bottom:0.5rem }
+.hero p{ color:var(--muted); margin-bottom:1rem }
+
+/* Cards and products */
+.products-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.25rem }
+.product-card{ background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(36,37,38,0.06); overflow:hidden }
+.product-image{ height:180px; display:flex; align-items:center; justify-content:center; background:#f4f3fb; color:#9a97a8 }
+.product-info{ padding:1rem }
+.product-price{ color:var(--brand); font-weight:700 }
+
+/* Buttons */
+.btn-primary{ background:var(--brand); border-color:var(--brand) }
+.btn-primary:hover{ background:var(--brand-dark); border-color:var(--brand-dark) }
+
+/* Cart */
+.cart-item{ background:#fff; padding:1rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.06); margin-bottom:1rem }
+.cart-item-image{ width:120px; height:120px; background:#f4f3fb; display:flex; align-items:center; justify-content:center }
+
+/* Footer */
+footer{ background:linear-gradient(90deg,var(--brand-dark),#6b4fa0); color:#fff }
+
+@media (max-width:768px){
+  .hero h1{ font-size:1.8rem }
+}
+
+/* Small utilities */
+.muted{ color:var(--muted) }

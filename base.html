@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Baby Care - Newborn Baby Care</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ logo }}" type="image/png">
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .text-purple {
+            color: #7c5cbf !important;
+        }
+
+        /* --- Animations & Hover Effects --- */
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Smooth Page Load */
+        main {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Navbar Links Hover */
+        .nav-link {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #7c5cbf;
+        }
+
+        /* Button Hover Pop */
+        .btn {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Logo Animation */
+        .navbar-brand img {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .navbar-brand:hover img {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        /* Dropdown Fade In */
+        .dropdown-menu {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-white shadow-sm sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light container">
+            <a class="navbar-brand fw-bold text-purple d-flex align-items-center" href="{{ url_for('home') }}">
+                <img src="{{ logo }}" alt="Logo" width="30" height="30" class="me-2 rounded-circle shadow-sm">
+                <span>Dream Baby Care</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    {% set user_in = session.get('user_id') %}
+                    {% set doctor_in = session.get('doctor_id') %}
+                    {% set admin_in = session.get('admin_logged_in') %}
+                    {% set is_admin_user = session.get('is_admin') %}
+
+                    {# --- USER VIEW --- #}
+                    {% if user_in %}
+                        <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/tips">Tips</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/tracker">Tracker</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/ai">Baby AI</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-outline-primary position-relative" href="/cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="badge bg-danger rounded-pill cart-count position-absolute top-0 start-100 translate-middle">{{ cart_count|default(0) }}</span>
+                            </a>
+                        </li>
+
+                        <!-- Language Selector -->
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-globe"></i> Language: {{ lang|upper if lang else 'EN' }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item" href="/set_language/en">English</a></li>
+                                <li><a class="dropdown-item" href="/set_language/hi">हिंदी (Hindi)</a></li>
+                                <li><a class="dropdown-item" href="/set_language/kn">ಕನ್ನಡ (Kannada)</a></li>
+                                <li><a class="dropdown-item" href="/set_language/ta">தமிழ் (Tamil)</a></li>
+                                <li><a class="dropdown-item" href="/set_language/te">తెలుగు (Telugu)</a></li>
+                                <li><a class="dropdown-item" href="/set_language/mr">मराठी (Marathi)</a></li>
+                                <li><a class="dropdown-item" href="/set_language/gu">ગુજરાતી (Gujarati)</a></li>
+                                <li><a class="dropdown-item" href="/set_language/bn">বাংলা (Bengali)</a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- User Dropdown -->
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i> {{ session.get('user_name') }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/user/dashboard"><i class="fas fa-tachometer-alt"></i> My Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/user/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </li>
+
+                        {# If user is also admin, show admin dropdown #}
+                        {% if is_admin_user %}
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle btn btn-warning text-white" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                                <li><a class="dropdown-item" href="/admin/dashboard">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="/admin/users">Manage Users</a></li>
+                                <li><a class="dropdown-item" href="/admin/manage_subscriptions"><i class="fas fa-key"></i> Manage Subscriptions</a></li>
+                                <li><a class="dropdown-item" href="/admin/action_log"><i class="fas fa-history"></i> Action Log</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/admin/logout">Logout</a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+
+                    {# --- DOCTOR VIEW --- #}
+                    {% elif doctor_in %}
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle btn btn-info text-white" href="#" id="doctorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-md"></i> Doctor
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="doctorDropdown">
+                                <li><a class="dropdown-item" href="/doctor/dashboard">Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/doctor/logout">Logout</a></li>
+                            </ul>
+                        </li>
+
+                    {# --- ADMIN VIEW (Pure Admin Login) --- #}
+                    {% elif admin_in %}
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle btn btn-warning text-white" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                                <li><a class="dropdown-item" href="/admin/dashboard">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="/admin/users">Manage Users</a></li>
+                                <li><a class="dropdown-item" href="/admin/manage_subscriptions"><i class="fas fa-key"></i> Manage Subscriptions</a></li>
+                                <li><a class="dropdown-item" href="/admin/action_log"><i class="fas fa-history"></i> Action Log</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/admin/logout">Logout</a></li>
+                            </ul>
+                        </li>
+
+                    {# --- GUEST VIEW --- #}
+                    {% else %}
+                        <li class="nav-item ms-3"><a class="btn btn-outline-secondary" href="/login">Login</a></li>
+                        <li class="nav-item ms-2"><a class="btn btn-primary" href="/register">Register</a></li>
+                        
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-outline-info" href="/doctor/login">
+                                <i class="fas fa-user-md"></i> Doctor
+                            </a>
+                        </li>
+
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-warning" href="/admin/login">
+                                <i class="fas fa-cog"></i> Admin
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-white pt-5 pb-4 mt-5" style="background-color: #4d377d;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-uppercase mb-4 fw-bold d-flex align-items-center">
+                        <img src="{{ logo }}" alt="Logo" width="24" height="24" class="me-2 rounded-circle shadow-sm">
+                        Dream Baby Care
+                    </h5>
+                    <p class="text-white-50">Your trusted partner in the beautiful journey of parenthood. We provide tools, tips, and support for you and your baby.</p>
+                </div>
+                <div class="col-md-2 offset-md-1 mb-4">
+                    <h5 class="text-uppercase mb-4 fw-bold">Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/about" class="text-white-50 text-decoration-none">About</a></li>
+                        <li class="mb-2"><a href="/tips" class="text-white-50 text-decoration-none">Tips</a></li>
+                        <li class="mb-2"><a href="/shop" class="text-white-50 text-decoration-none">Shop</a></li>
+                        <li class="mb-2"><a href="/contact" class="text-white-50 text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-5 mb-4">
+                    <h5 class="text-uppercase mb-4 fw-bold">Subscribe to our Newsletter</h5>
+                    <p class="text-white-50">Get the latest tips, product news, and special offers directly to your inbox.</p>
+                    <form action="{{ url_for('subscribe_newsletter') }}" method="POST" class="d-flex">
+                        <input type="email" name="email" class="form-control" placeholder="Your email address" required>
+                        <button type="submit" class="btn btn-primary ms-2">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center text-white-50">
+                <p>&copy; 2025 Dream Baby Care - Newborn Baby Care. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

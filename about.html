@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-soft: #e3f2fd;
+        --primary-color: #0d6efd;
+        --card-radius: 16px;
+    }
+    .about-hero {
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        padding: 80px 0;
+        margin-bottom: 40px;
+    }
+    .card-modern {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: white;
+        overflow: hidden;
+    }
+    .card-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+    .team-img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        min-height: 250px;
+    }
+    .feature-icon-box {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        background: rgba(13, 110, 253, 0.1);
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    .card-modern:hover .feature-icon-box {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.1) rotate(5deg);
+    }
+</style>
+
+    <!-- Hero Section -->
+    <section class="about-hero border-bottom">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3 d-flex align-items-center justify-content-center text-dark">
+                <img src="https://res.cloudinary.com/duucdndfx/image/upload/v1767200335/WhatsApp_Image_2025-11-23_at_10.59.52_PM_nwqgbo.jpg" alt="Logo" width="50" height="50" class="me-3 rounded-circle">
+                {{ info.title }}
+            </h1>
+            <p class="lead text-muted mx-auto mb-0" style="max-width: 700px;">
+                {{ info.description }}
+            </p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="py-5 mb-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="card-modern p-5 bg-primary text-white text-center h-100 d-flex flex-column justify-content-center">
+                        <div class="mb-3"><i class="fas fa-heart fa-4x text-white-50"></i></div>
+                        <h2 class="fw-bold text-white">Our Mission</h2>
+                    </div>
+                </div>
+                <div class="col-md-6 ps-md-5">
+                    <h3 class="fw-bold mb-3 text-dark">Why We Are Here</h3>
+                    <p class="fs-5 text-muted mb-4">{{ info.mission }}</p>
+                    <p class="text-muted lead fs-6">We believe that parenting is the most rewarding job in the world, but it doesn't come with a manual. That's why we built Dream Baby Care—to be that manual, that friend, and that support system you can rely on 24/7.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meet the Team Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-dark">Meet Our Team</h2>
+                <p class="text-muted">The visionaries behind Dream Baby Care.</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card-modern mb-4">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="https://res.cloudinary.com/duucdndfx/image/upload/v1767200091/WhatsApp_Image_2025-12-07_at_7.08.31_PM_umvwcb.jpg" class="team-img" alt="Founder">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body p-4 p-lg-5">
+                                    <h4 class="fw-bold mb-1">Srujan S S</h4>
+                                    <h6 class="text-primary mb-3">Founder & CEO</h6>
+                                    <p class="text-muted small mb-4">Srujan S S started Dream Baby Care with a simple mission: to make parenting a little less stressful and a lot more joyful. As a student, he understood the challenges and wanted to create a single, reliable resource for families everywhere.</p>
+                                    <div class="d-flex gap-3 mt-3">
+                                        <a href="#" class="text-secondary"><i class="fab fa-twitter fa-lg"></i></a>
+                                        <a href="https://www.linkedin.com/in/srujan-ss-9b7a1b336/" class="text-secondary" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-modern">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="https://img.sanishtech.com/u/7dd9e598dbeb16cc4ff2e4cacc7c0a2a.jpg" class="team-img" alt="Co-founder">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body p-4 p-lg-5">
+                                    <h4 class="fw-bold mb-1">Co-Founder</h4>
+                                    <h6 class="text-primary mb-3">Co-founder & Helper</h6>
+                                    <p class="text-muted small mb-4">Dedicated to supporting the mission of Dream Baby Care. Working alongside the founder to ensure every parent gets the support they need as a student.</p>
+                                    <div class="d-flex gap-3 mt-3">
+                                        <a href="#" class="text-secondary"><i class="fab fa-twitter fa-lg"></i></a>
+                                        <a href="https://www.linkedin.com/in/srujan-ss-9b7a1b336/" class="text-secondary" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-dark">What We Offer</h2>
+                <p class="text-muted">Everything you need in one place.</p>
+            </div>
+            <div class="row g-4">
+                {% for feature in info.features %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card-modern h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="feature-icon-box">
+                                <i class="{{ feature.icon }}"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">{{ feature.title }}</h5>
+                            <p class="text-muted small mb-0">{{ feature.desc }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

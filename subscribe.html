@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Subscribe - BabyCare{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center p-4">
+                    <h3 class="mb-3">Subscribe to BabyCare Premium</h3>
+                    <p class="lead">Pay using UPI to the QR below. After payment, click <strong>Request Access</strong> and the admin will verify and grant access.</p>
+
+                    <div class="my-3">
+                        <h2 class="display-6">₹199 <small class="text-muted">/ month</small></h2>
+                    </div>
+
+                    <div class="mb-3">
+                        <!-- Place your UPI QR image at static/upi/upi_qr.png -->
+                        <img src="https://res.cloudinary.com/duucdndfx/image/upload/v1767200160/ur_cgstra.jpg" alt="Screenshot_2025_1218_003030" width="202" height="405" loading="lazy" style="max-width:100%;height:auto;">
+                        <div class="mt-2 text-muted small">If the QR doesn't show, upload your QR image to <code>static/upi/upi_qr.png</code>.</div>
+                    </div>
+
+                    <div class="mb-2 text-muted small">UPI ID: <strong>your-upi-id@bank</strong></div>
+
+                    <form method="post" action="/subscribe">
+                        <button type="submit" class="btn btn-lg btn-primary w-100">I've paid — Request Access</button>
+                    </form>
+
+                    <div class="mt-3 text-muted small">Admin will manually verify and grant access when payment is received.</div>
+                    <a href="/tips" class="btn btn-link mt-3">Back to Tips</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

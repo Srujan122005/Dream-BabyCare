@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-soft: #fff8e1;
+        --primary-color: #f0ad4e;
+        --card-radius: 16px;
+    }
+    .dashboard-section {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 76px);
+    }
+    .card-modern {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: white;
+        overflow: hidden;
+    }
+    .card-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+    .stat-icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+    .quick-action-card {
+        text-align: center;
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+    }
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+    .card-modern:hover .quick-action-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    .table-modern th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #8898aa;
+        border-bottom-width: 1px;
+    }
+    .table-modern td {
+        vertical-align: middle;
+        padding: 1rem 0.75rem;
+    }
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+</style>
+
+<section class="dashboard-section py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Admin Dashboard</h2>
+                <p class="text-muted mb-0">Overview of system performance and management</p>
+            </div>
+            <div class="d-flex gap-2">
+                 <form method="post" action="/admin/undo_last_action" onsubmit="return confirm('Undo the last admin subscription action?');">
+                    <button type="submit" class="btn btn-outline-secondary rounded-pill"><i class="fas fa-undo me-2"></i>Undo Last Action</button>
+                </form>
+                <a href="/admin/logout" class="btn btn-danger rounded-pill"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card-modern h-100">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="stat-icon-box bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ stats.total_users }}</h3>
+                            <p class="text-muted small mb-0">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-modern h-100">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="stat-icon-box bg-success bg-opacity-10 text-success">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ stats.total_contacts }}</h3>
+                            <p class="text-muted small mb-0">Messages</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-modern h-100">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="stat-icon-box bg-info bg-opacity-10 text-info">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ stats.total_products }}</h3>
+                            <p class="text-muted small mb-0">Products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-modern h-100">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="stat-icon-box bg-warning bg-opacity-10 text-warning">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ stats.total_orders }}</h3>
+                            <p class="text-muted small mb-0">Cart Items</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Main Content Column -->
+            <div class="col-lg-8">
+                <!-- Management Links Grid -->
+                <h5 class="fw-bold mb-3 text-secondary">Management</h5>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-6">
+                        <a href="/admin/manage_subscriptions" class="card-modern quick-action-card">
+                            <div class="d-flex justify-content-between w-100 mb-2">
+                                <div class="quick-action-icon bg-primary bg-opacity-10 text-primary mb-0" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <span class="badge bg-primary rounded-pill align-self-start">{{ stats.pending_requests|default(0) }} Pending</span>
+                            </div>
+                            <div class="text-start w-100">
+                                <h5 class="fw-bold text-dark mb-1">Subscriptions</h5>
+                                <p class="text-muted small mb-0">Manage user access and approvals</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/admin/users" class="card-modern quick-action-card">
+                            <div class="d-flex justify-content-between w-100 mb-2">
+                                <div class="quick-action-icon bg-info bg-opacity-10 text-info mb-0" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="fas fa-user-cog"></i>
+                                </div>
+                            </div>
+                            <div class="text-start w-100">
+                                <h5 class="fw-bold text-dark mb-1">User Management</h5>
+                                <p class="text-muted small mb-0">View, edit, and manage user accounts</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/admin/doctors" class="card-modern quick-action-card">
+                            <div class="d-flex justify-content-between w-100 mb-2">
+                                <div class="quick-action-icon bg-success bg-opacity-10 text-success mb-0" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                            </div>
+                            <div class="text-start w-100">
+                                <h5 class="fw-bold text-dark mb-1">Doctors</h5>
+                                <p class="text-muted small mb-0">Manage medical professionals</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/admin/appointments" class="card-modern quick-action-card">
+                            <div class="d-flex justify-content-between w-100 mb-2">
+                                <div class="quick-action-icon bg-warning bg-opacity-10 text-warning mb-0" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                            </div>
+                            <div class="text-start w-100">
+                                <h5 class="fw-bold text-dark mb-1">Appointments</h5>
+                                <p class="text-muted small mb-0">View and track bookings</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Recent Registrations</h5>
+                    <a href="/admin/users" class="btn btn-sm btn-primary rounded-pill px-3">View All</a>
+                </div>
+                <div class="card-modern mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-modern table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">User</th>
+                                        <th>Baby Details</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if users %}
+                                        {% for user in users[:5] %}
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-light rounded-circle p-2 me-3 text-primary">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold text-dark">{{ user.parent_name }}</h6>
+                                                        <small class="text-muted">{{ user.email }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="small">
+                                                    <div class="fw-bold text-dark">{{ user.baby_name }}</div>
+                                                    <div class="text-muted">{{ user.baby_age }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if user.is_subscribed %}
+                                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Subscribed</span>
+                                                {% elif user.subscription_pending %}
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">Pending</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">Free</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                {% if user.subscription_pending and not user.is_subscribed %}
+                                                    <form method="post" action="/admin/approve_subscription/{{ user.id }}" style="display:inline;" onsubmit="return confirm('Approve?');">
+                                                        <button type="submit" class="btn btn-sm btn-success action-btn" title="Approve"><i class="fas fa-check"></i></button>
+                                                    </form>
+                                                    <form method="post" action="/admin/reject_subscription/{{ user.id }}" style="display:inline;" onsubmit="return confirm('Reject?');">
+                                                        <button type="submit" class="btn btn-sm btn-danger action-btn" title="Reject"><i class="fas fa-times"></i></button>
+                                                    </form>
+                                                {% elif user.is_subscribed %}
+                                                    <form method="post" action="/admin/revoke_subscription/{{ user.id }}" style="display:inline;" onsubmit="return confirm('Revoke?');">
+                                                        <button type="submit" class="btn btn-sm btn-warning action-btn text-white" title="Revoke"><i class="fas fa-ban"></i></button>
+                                                    </form>
+                                                {% else %}
+                                                    <form method="post" action="/admin/grant_subscription/{{ user.id }}" style="display:inline;" onsubmit="return confirm('Grant?');">
+                                                        <button type="submit" class="btn btn-sm btn-primary action-btn" title="Grant Access"><i class="fas fa-key"></i></button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr><td colspan="4" class="text-center py-5 text-muted">No users found</td></tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="col-lg-4">
+                <!-- Recent Messages -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">Recent Messages</h5>
+                </div>
+                <div class="card-modern mb-4">
+                    <div class="card-body p-0">
+                        {% if recent_contacts and recent_contacts|length > 0 %}
+                        <div class="list-group list-group-flush">
+                            {% for msg in recent_contacts %}
+                            <div class="list-group-item border-0 border-bottom p-3">
+                                <div class="d-flex w-100 justify-content-between mb-1">
+                                    <h6 class="mb-0 fw-bold text-dark text-truncate" style="max-width: 150px;">{{ msg[0] }}</h6>
+                                    <small class="text-muted">{{ msg[3].split(' ')[0] if msg[3] else '' }}</small>
+                                </div>
+                                <p class="mb-1 text-muted small text-truncate">{{ msg[2] }}</p>
+                                <small class="text-primary">{{ msg[1] }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="p-3 text-center">
+                            <a href="/admin/contacts" class="btn btn-outline-primary btn-sm w-100 rounded-pill">View All Messages</a>
+                        </div>
+                        {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <i class="fas fa-inbox fa-2x mb-2 opacity-25"></i>
+                            <p class="mb-0">No recent messages</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-secondary">System Actions</h5>
+                </div>
+                <div class="card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-grid gap-3">
+                            <a href="/admin/action_log" class="btn btn-outline-dark text-start rounded-pill">
+                                <i class="fas fa-history me-2"></i> View Action Log
+                            </a>
+                            <a href="/" class="btn btn-outline-secondary text-start rounded-pill">
+                                <i class="fas fa-home me-2"></i> View Live Site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

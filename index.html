@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Custom Styles for Home Page -->
+<style>
+    :root {
+        --primary-color: #7c5cbf;
+        --secondary-color: #ff9f43;
+        --accent-color: #0dcaf0;
+        --text-dark: #2d3436;
+        --text-light: #636e72;
+        --bg-light: #f8f9fa;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        background: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+        height: 85vh;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        color: white;
+        overflow: hidden;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(124, 92, 191, 0.9), rgba(108, 92, 231, 0.7));
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        font-weight: 300;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+        animation: fadeInUp 1s ease-out 0.2s backwards;
+    }
+
+    .hero-btns {
+        animation: fadeInUp 1s ease-out 0.4s backwards;
+    }
+
+    .btn-hero-primary {
+        background-color: #fff;
+        color: var(--primary-color);
+        font-weight: 600;
+        padding: 12px 30px;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        border: 2px solid #fff;
+    }
+
+    .btn-hero-primary:hover {
+        background-color: transparent;
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-hero-outline {
+        background-color: transparent;
+        color: #fff;
+        font-weight: 600;
+        padding: 12px 30px;
+        border-radius: 50px;
+        border: 2px solid rgba(255,255,255,0.5);
+        transition: all 0.3s ease;
+    }
+
+    .btn-hero-outline:hover {
+        background-color: rgba(255,255,255,0.1);
+        border-color: #fff;
+        color: #fff;
+        transform: translateY(-3px);
+    }
+
+    /* Stats/Trust Strip */
+    .stats-strip {
+        background: #fff;
+        padding: 3rem 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        position: relative;
+        margin-top: -50px;
+        border-radius: 10px;
+        z-index: 10;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        border-right: 1px solid #eee;
+    }
+
+    .stat-item:last-child {
+        border-right: none;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    /* Section Styling */
+    .section-padding {
+        padding: 5rem 0;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 4px;
+        background: var(--primary-color);
+        margin: 10px auto 0;
+        border-radius: 2px;
+    }
+
+    .section-desc {
+        color: var(--text-light);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(124, 92, 191, 0.1);
+        border-color: transparent;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--primary-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: left;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: rgba(124, 92, 191, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon-wrapper {
+        background: var(--primary-color);
+    }
+
+    .feature-card:hover .feature-icon-wrapper i {
+        color: #fff;
+    }
+
+    .feature-icon-wrapper i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+    }
+
+    /* Why Us Section */
+    .why-us-section {
+        background-color: #fff;
+        overflow: hidden;
+    }
+
+    .why-us-img {
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transform: rotate(-2deg);
+        transition: transform 0.3s ease;
+    }
+
+    .why-us-img:hover {
+        transform: rotate(0);
+    }
+
+    .benefit-list-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .benefit-icon {
+        min-width: 40px;
+        height: 40px;
+        background: rgba(13, 202, 240, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        margin-right: 1rem;
+        font-size: 1.2rem;
+    }
+
+    /* Testimonials */
+    .testimonial-section {
+        background: linear-gradient(180deg, #f8f9fa 0%, #fff 100%);
+    }
+
+    .testimonial-card-modern {
+        background: #fff;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        position: relative;
+        margin-top: 30px;
+    }
+
+    .testimonial-quote-icon {
+        position: absolute;
+        top: -20px;
+        left: 30px;
+        width: 40px;
+        height: 40px;
+        background: var(--secondary-color);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .testimonial-text {
+        font-style: italic;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .testimonial-user {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #eee;
+        margin-right: 1rem;
+        object-fit: cover;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: url('https://images.unsplash.com/photo-1555252333-9f8e92e65df4?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+        position: relative;
+        padding: 6rem 0;
+        color: #fff;
+        text-align: center;
+    }
+
+    .cta-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(45, 52, 54, 0.85);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Decorative floating bubbles in hero */
+    .hero-decor { position: absolute; inset: 0; pointer-events: none; z-index: 1 }
+    .hero-decor .bubble { position: absolute; border-radius: 50%; opacity: 0.95; filter: blur(6px); transform: translateY(0); animation: floatUp 7s ease-in-out infinite; }
+    .hero-decor .b1 { width: 120px; height: 120px; left: 6%; bottom: 8%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(124,92,191,0.22)); animation-duration:7s; animation-delay:0s }
+    .hero-decor .b2 { width: 88px; height: 88px; right: 10%; bottom: 20%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(108,92,231,0.18)); animation-duration:9s; animation-delay:1s }
+    .hero-decor .b3 { width: 64px; height: 64px; left: 56%; bottom: 6%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.88), rgba(124,92,191,0.16)); animation-duration:8s; animation-delay:2s }
+
+    @keyframes floatUp {
+        0% { transform: translateY(20px) scale(1); opacity: 0.9 }
+        50% { transform: translateY(-18px) scale(1.05); opacity: 1 }
+        100% { transform: translateY(20px) scale(1); opacity: 0.9 }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        .stats-strip {
+            margin-top: 0;
+            box-shadow: none;
+            border-bottom: 1px solid #eee;
+        }
+        .stat-item {
+            border-right: none;
+            border-bottom: 1px solid #eee;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-decor" aria-hidden="true">
+        <span class="bubble b1"></span>
+        <span class="bubble b2"></span>
+        <span class="bubble b3"></span>
+    </div>
+    <div class="container hero-content">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-10">
+                <h1 class="hero-title">Parenting Made Simple, <br>Beautiful & Stress-Free</h1>
+                <p class="hero-subtitle">The all-in-one companion for modern parents. Track growth, get expert advice, and shop essentials—all in one place.</p>
+                <div class="hero-btns d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/tips" class="btn btn-hero-primary"><i class="fas fa-play-circle me-2"></i> Start Guide</a>
+                    <a href="/shop" class="btn btn-hero-outline"><i class="fas fa-shopping-bag me-2"></i> Visit Shop</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Strip -->
+<div class="container">
+    <div class="stats-strip">
+        <div class="row">
+            <div class="col-md-3 stat-item">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-number">10+</div>
+                <div class="stat-label">Happy Parents</div>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-icon"><i class="fas fa-video"></i></div>
+                <div class="stat-number">5+</div>
+                <div class="stat-label">Video Guides</div>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-icon"><i class="fas fa-user-md"></i></div>
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Expert Doctors</div>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-number">4.9</div>
+                <div class="stat-label">App Rating</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Everything You Need</h2>
+            <p class="section-desc">We've curated the most essential tools and resources to help you navigate the first years of parenthood with confidence.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Tracking</h3>
+                    <p class="text-muted">Log sleep, feeding, and diaper changes effortlessly. Visualize patterns and growth.</p>
+                    <a href="/tracker" class="text-primary text-decoration-none fw-bold small">Try Tracker <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3 class="feature-title">Expert Consultations</h3>
+                    <p class="text-muted">Connect with pediatricians and child psychologists via video or voice call instantly.</p>
+                    <a href="/contact" class="text-primary text-decoration-none fw-bold small">Book Doctor <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-shopping-basket"></i>
+                    </div>
+                    <h3 class="feature-title">Curated Shop</h3>
+                    <p class="text-muted">Safe, certified, and loved products for your baby. Delivered quickly to your doorstep.</p>
+                    <a href="/shop" class="text-primary text-decoration-none fw-bold small">Shop Now <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-Language</h3>
+                    <p class="text-muted">Access content in 8+ regional languages. Parenting advice that speaks your language.</p>
+                    <a href="/tips" class="text-primary text-decoration-none fw-bold small">Explore Tips <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section-padding why-us-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <img src="https://priyagoswami.com/wp-content/uploads/2014/10/Family-Portrait_Whites-8-uai-2000x2000.jpg" alt="Happy Family" class="img-fluid why-us-img">
+            </div>
+            <div class="col-lg-6 ps-lg-5">
+                <h2 class="section-title mb-4">Why Parents Trust Us?</h2>
+                <p class="text-muted mb-4">We understand that every baby is unique. Our platform adapts to your needs, providing personalized insights and support when you need it most.</p>
+                
+                <div class="benefit-list">
+                    <div class="benefit-list-item">
+                        <div class="benefit-icon"><i class="fas fa-check"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Medically Reviewed Content</h5>
+                            <p class="text-muted small mb-0">All our tips and guides are reviewed by certified pediatricians.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-list-item">
+                        <div class="benefit-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Data Privacy First</h5>
+                            <p class="text-muted small mb-0">Your family's data is encrypted and never shared with third parties.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-list-item">
+                        <div class="benefit-icon"><i class="fas fa-heart"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Community Support</h5>
+                            <p class="text-muted small mb-0">Join a community of parents who share advice and experiences.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="/register" class="btn btn-primary rounded-pill px-4 py-2 mt-2">Join Our Family</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section-padding testimonial-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Stories from Parents</h2>
+            <p class="section-desc">Don't just take our word for it. Here's what parents across the country are saying about Dream Baby Care.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card-modern">
+                    <div class="testimonial-quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">"The tracker is a lifesaver! I used to write everything in a notebook, but this app makes it so easy to see my baby's sleep patterns. Highly recommend!"</p>
+                    <div class="testimonial-user">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-avatar">
+                        <div>
+                            <h6 class="fw-bold mb-0">Priya Sharma</h6>
+                            <small class="text-muted">Mom of 3-month old</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card-modern">
+                    <div class="testimonial-quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">"Being a first-time dad was scary. The video guides in Hindi helped me learn how to bathe and swaddle my baby correctly. Thank you!"</p>
+                    <div class="testimonial-user">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="user-avatar">
+                        <div>
+                            <h6 class="fw-bold mb-0">Rahul Verma</h6>
+                            <small class="text-muted">Dad of 1-month old</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card-modern">
+                    <div class="testimonial-quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">"I love the shop section. It's so convenient to find safe products and have them linked directly to quick delivery apps. A complete package."</p>
+                    <div class="testimonial-user">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="user-avatar">
+                        <div>
+                            <h6 class="fw-bold mb-0">Anita Desai</h6>
+                            <small class="text-muted">Mom of 6-month old</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="container position-relative" style="z-index: 2;">
+        <h2 class="display-5 fw-bold mb-4">Ready to Give Your Baby the Best Start?</h2>
+        <p class="lead mb-5 opacity-75">Join thousands of parents today and make your parenting journey smoother.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/register" class="btn btn-primary btn-lg rounded-pill px-5">Get Started Free</a>
+            <a href="/contact" class="btn btn-outline-light btn-lg rounded-pill px-5">Contact Us</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

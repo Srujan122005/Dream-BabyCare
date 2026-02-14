@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Shop Hero Section -->
+    <section class="shop-hero py-5 mb-5">
+        <div class="container text-center text-white">
+            <h1 class="display-4 fw-bold mb-3">Baby Essentials Shop</h1>
+            <p class="lead mb-4">Curated products for your little one's comfort and care</p>
+            <div class="d-inline-flex gap-2">
+                <a href="#products" class="btn btn-light btn-lg rounded-pill px-4">Browse Collection</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="products" class="py-4">
+        <div class="container">
+            {% for category, products in categories.items() %}
+            <div class="category-section mb-5">
+                <div class="d-flex align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="category-title fw-bold text-primary mb-0 me-3">{{ category }}</h3>
+                    <span class="badge bg-light text-secondary rounded-pill">{{ products|length }} items</span>
+                </div>
+                
+                <div class="row g-4">
+                    {% for product in products %}
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 product-card border-0 shadow-sm">
+                            <div class="position-relative overflow-hidden">
+                                {% if product[6] and product[6] < product[3] %}
+                                <div class="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 m-2 rounded small fw-bold shadow-sm" style="z-index: 5;">
+                                    SALE
+                                </div>
+                                {% endif %}
+                                {% if product[4] %}
+                                <img src="{{ product[4] }}" class="card-img-top product-img" alt="{{ product[1] }}">
+                                {% else %}
+                                <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=500&q=60" class="card-img-top product-img" alt="Product Image">
+                                {% endif %}
+                                <div class="product-overlay d-flex align-items-center justify-content-center gap-2">
+                                    <a href="/product/{{ product[0] }}" class="btn btn-light btn-sm rounded-circle shadow-sm" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/add_to_cart/{{ product[0] }}" class="btn btn-success btn-sm rounded-circle shadow-sm" title="Buy on Blinkit" target="_blank">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column p-3">
+                                <div class="mb-2">
+                                    <span class="badge bg-info bg-opacity-10 text-info small">{{ category }}</span>
+                                </div>
+                                <h5 class="card-title fw-bold text-dark mb-1 text-truncate">{{ product[1] }}</h5>
+                                <div class="mb-2">
+                                    <i class="fas fa-star text-warning small"></i>
+                                    <i class="fas fa-star text-warning small"></i>
+                                    <i class="fas fa-star text-warning small"></i>
+                                    <i class="fas fa-star text-warning small"></i>
+                                    <i class="fas fa-star-half-alt text-warning small"></i>
+                                    <span class="text-muted small ms-1">(4.5)</span>
+                                </div>
+                                <p class="card-text text-muted small mb-3 flex-grow-1">{{ product[2][:60] }}{% if product[2]|length > 60 %}...{% endif %}</p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    {% if product[6] and product[6] < product[3] %}
+                                    <div>
+                                        <span class="h5 mb-0 text-danger fw-bold">{{ product[6]|inr }}</span>
+                                        <small class="text-muted text-decoration-line-through ms-1">{{ product[3]|inr }}</small>
+                                    </div>
+                                    {% else %}
+                                    <span class="h5 mb-0 text-primary fw-bold">{{ product[3]|inr }}</span>
+                                    {% endif %}
+                                    <a href="/product/{{ product[0] }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <style>
+        .shop-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0 0 50px 50px;
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+        .product-img {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        .product-image-placeholder {
+            height: 200px;
+        }
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        .product-overlay .btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover .product-overlay .btn {
+            transform: translateY(0);
+        }
+    </style>
+{% endblock %}

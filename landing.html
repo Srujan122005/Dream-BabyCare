@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Dream Baby Care</title>
+    <link rel="icon" href="https://res.cloudinary.com/duucdndfx/image/upload/v1767200335/WhatsApp_Image_2025-11-23_at_10.59.52_PM_nwqgbo.jpg" type="image/jpeg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            min-height: 600px;
+        }
+        .login-image {
+            width: 50%;
+            background: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+            position: relative;
+        }
+        .login-image::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+        }
+        .login-form-container {
+            width: 50%;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+        }
+        .brand-logo {
+            color: #7c5cbf;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-role {
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: none;
+            color: white;
+            text-decoration: none;
+        }
+        .btn-role:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        .btn-parent {
+            background-color: #ff6b6b;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        .btn-parent:hover {
+            background-color: #ff5252;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        .btn-doctor {
+            background-color: #0dcaf0;
+            box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
+        }
+        .btn-doctor:hover {
+            background-color: #0bb5d8;
+            box-shadow: 0 6px 20px rgba(13, 202, 240, 0.4);
+        }
+        .btn-admin {
+            background-color: #f0ad4e;
+            box-shadow: 0 4px 15px rgba(240, 173, 78, 0.3);
+        }
+        .btn-admin:hover {
+            background-color: #ec971f;
+            box-shadow: 0 6px 20px rgba(240, 173, 78, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .login-card {
+                flex-direction: column;
+                max-width: 450px;
+                margin: 20px;
+                min-height: auto;
+            }
+            .login-image {
+                width: 100%;
+                height: 200px;
+            }
+            .login-form-container {
+                width: 100%;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-image"></div>
+        <div class="login-form-container">
+            <div class="brand-logo">
+                <img src="https://res.cloudinary.com/duucdndfx/image/upload/v1767200335/WhatsApp_Image_2025-11-23_at_10.59.52_PM_nwqgbo.jpg" alt="Logo" width="50" height="50" class="mx-2 rounded-circle">
+                Dream Baby Care
+            </div>
+            <h3 class="fw-bold mb-2">Welcome</h3>
+            <p class="text-muted mb-5">Please select your portal to continue.</p>
+            
+            <a href="{{ url_for('login') }}" class="btn-role btn-parent">
+                <i class="fas fa-user"></i> Parent Login / Register
+            </a>
+            
+            <a href="{{ url_for('doctor_login') }}" class="btn-role btn-doctor">
+                <i class="fas fa-user-md"></i> Doctor Login
+            </a>
+            
+            <a href="{{ url_for('admin_login') }}" class="btn-role btn-admin">
+                <i class="fas fa-cog"></i> Admin Login
+            </a>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">New here? <a href="{{ url_for('register') }}" class="text-decoration-none fw-bold" style="color: #ff6b6b;">Create an Account</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

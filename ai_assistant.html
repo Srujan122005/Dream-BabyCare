@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --ai-primary: #7c5cbf;
+        --ai-bg: #f8f9fa;
+        --chat-user-bg: #e9ecef;
+        --chat-ai-bg: #f0f7ff;
+        --chat-ai-border: #cce5ff;
+    }
+    .ai-section {
+        background: linear-gradient(180deg, #fdfbfb 0%, #f4f6f8 100%);
+        min-height: calc(100vh - 76px);
+    }
+    .ai-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .ai-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        background: #fff;
+        overflow: hidden;
+    }
+    .ai-header {
+        background: linear-gradient(135deg, var(--ai-primary) 0%, #a29bfe 100%);
+        padding: 2rem;
+        color: white;
+        text-align: center;
+    }
+    .ai-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.8rem;
+        backdrop-filter: blur(5px);
+    }
+    .suggestion-chip {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        color: #555;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+        margin: 0 5px 10px 0;
+    }
+    .suggestion-chip:hover {
+        background: var(--ai-primary);
+        color: white;
+        border-color: var(--ai-primary);
+        transform: translateY(-2px);
+    }
+    .input-wrapper {
+        position: relative;
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 5px;
+        border: 2px solid transparent;
+        transition: border-color 0.3s;
+    }
+    .input-wrapper:focus-within {
+        border-color: var(--ai-primary);
+        background: #fff;
+    }
+    .ai-textarea {
+        border: none;
+        background: transparent;
+        resize: none;
+        box-shadow: none;
+        font-size: 1rem;
+        padding: 15px;
+        min-height: 80px;
+    }
+    .ai-textarea:focus {
+        box-shadow: none;
+        background: transparent;
+    }
+    .chat-container {
+        height: 400px;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e9ecef;
+        scroll-behavior: smooth;
+    }
+    .chat-message {
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+    .chat-message.user { align-items: flex-end; }
+    .chat-message.ai { align-items: flex-start; }
+    
+    .message-bubble {
+        max-width: 85%;
+        padding: 12px 18px;
+        border-radius: 18px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        position: relative;
+        word-wrap: break-word;
+    }
+    .user .message-bubble {
+        background: var(--ai-primary);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    .ai .message-bubble {
+        background: white;
+        color: #2d3436;
+        border: 1px solid #e0e0e0;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    .typing-indicator span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: var(--ai-primary);
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out both;
+        margin: 0 2px;
+    }
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typing {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<section class="ai-section py-5">
+    <div class="container ai-container">
+        <div class="ai-card">
+            <div class="ai-header">
+                <div class="ai-icon-wrapper">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="fw-bold mb-1">Dream Baby AI Plus</h3>
+                <p class="mb-0 opacity-75">Your smart parenting companion. Ask anything!</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <!-- Suggestions -->
+                <div class="mb-4">
+                    <p class="small text-muted fw-bold text-uppercase mb-2">Try asking:</p>
+                    <div id="suggestions">
+                        <span class="suggestion-chip" onclick="fillInput('How do I soothe a crying baby?')">👶 Soothe crying baby</span>
+                        <span class="suggestion-chip" onclick="fillInput('What is a good sleep schedule for a 3-month-old?')">😴 Sleep schedule</span>
+                        <span class="suggestion-chip" onclick="fillInput('Signs of dehydration in newborns')">💧 Dehydration signs</span>
+                        <span class="suggestion-chip" onclick="fillInput('When should I start solid foods?')">🥣 Solid foods</span>
+                    </div>
+                </div>
+
+                <!-- Chat History Area -->
+                <div id="chatContainer" class="chat-container">
+                    {% if history %}
+                        {% for turn in history %}
+                        <div class="chat-message user">
+                            <div class="message-bubble">{{ turn.user }}</div>
+                        </div>
+                        <div class="chat-message ai">
+                            <div class="message-bubble">{{ turn.ai }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted mt-5 pt-4 opacity-50">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <p>Start a conversation...</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Input Form -->
+                <form id="aiForm">
+                    <div class="input-wrapper mb-3">
+                        <textarea id="question" class="form-control ai-textarea" placeholder="Type your question here..." required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted fst-italic" style="font-size: 0.8rem;">* Not a substitute for professional medical advice.</small>
+                        <div class="d-flex gap-2">
+                            <button type="button" id="clearBtn" class="btn btn-light rounded-pill px-3">Clear</button>
+                            <button type="submit" id="askBtn" class="btn btn-primary rounded-pill px-4 fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i> Ask AI
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="text-center py-4" style="display:none;">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <p class="text-muted small mt-2">Thinking...</p>
+                </div>
+
+                <div id="aiError" class="alert alert-danger mt-4 border-0 bg-danger bg-opacity-10 text-danger" style="display:none">
+                    <i class="fas fa-exclamation-circle me-2"></i> <span id="errorMsg"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+const aiForm = document.getElementById('aiForm');
+const questionInput = document.getElementById('question');
+const chatContainer = document.getElementById('chatContainer');
+const aiError = document.getElementById('aiError');
+const errorMsg = document.getElementById('errorMsg');
+const loadingState = document.getElementById('loadingState');
+const askBtn = document.getElementById('askBtn');
+
+// Auto-scroll to bottom on load
+chatContainer.scrollTop = chatContainer.scrollHeight;
+
+function appendMessage(text, sender) {
+    // Remove empty state if exists
+    if(chatContainer.querySelector('.text-center')) {
+        chatContainer.innerHTML = '';
+    }
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `chat-message ${sender}`;
+    msgDiv.innerHTML = `<div class="message-bubble">${text}</div>`;
+    chatContainer.appendChild(msgDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+aiForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    aiError.style.display = 'none';
+    
+    const q = questionInput.value.trim();
+    if(!q) return;
+    
+    // Add user message immediately
+    appendMessage(q, 'user');
+    questionInput.value = '';
+
+    // UI Loading State
+    loadingState.style.display = 'block';
+    askBtn.disabled = true;
+    questionInput.disabled = true;
+
+    fetch('/ai/ask', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({question: q})
+    })
+    .then(r => r.json())
+    .then(d => {
+        loadingState.style.display = 'none';
+        askBtn.disabled = false;
+        questionInput.disabled = false;
+
+        if(!d.success){ 
+            errorMsg.textContent = d.error || 'Unable to get answer'; 
+            aiError.style.display = 'block'; 
+            return; 
+        }
+        
+        appendMessage(d.answer || 'No answer provided.', 'ai');
+    })
+    .catch(err => { 
+        loadingState.style.display = 'none';
+        askBtn.disabled = false;
+        questionInput.disabled = false;
+        errorMsg.textContent = 'Error: ' + (err.message || err); 
+        aiError.style.display = 'block'; 
+        console.error(err); 
+    });
+});
+
+document.getElementById('clearBtn').addEventListener('click', function(){
+    if(confirm('Clear conversation history?')) {
+        fetch('/ai/clear', {method: 'POST'})
+        .then(() => {
+            chatContainer.innerHTML = '<div class="text-center text-muted mt-5 pt-4 opacity-50"><i class="fas fa-comments fa-3x mb-3"></i><p>Start a conversation...</p></div>';
+            questionInput.value = '';
+            questionInput.focus();
+        });
+    }
+});
+</script>
+
+{% endblock %}

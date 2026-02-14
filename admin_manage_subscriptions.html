@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Subscriptions - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4"><i class="fas fa-key"></i> Manage User Subscriptions</h2>
+
+            <!-- Tabs for different views -->
+            <ul class="nav nav-tabs mb-4" id="subTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                        <i class="fas fa-hourglass-half"></i> Pending Requests ({{ pending_count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="subscribed-tab" data-bs-toggle="tab" data-bs-target="#subscribed" type="button" role="tab">
+                        <i class="fas fa-check-circle"></i> Subscribed Users ({{ subscribed_count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                        <i class="fas fa-users"></i> All Users
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="subTabsContent">
+                <!-- PENDING REQUESTS -->
+                <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Pending Subscription Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if pending_requests and pending_requests|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Parent Name</th>
+                                            <th>Baby Name</th>
+                                            <th>Requested At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in pending_requests %}
+                                        <tr>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.parent_name }}</td>
+                                            <td>{{ user.baby_name }}</td>
+                                            <td>{{ user.created_at }}</td>
+                                            <td>
+                                                <form method="post" action="/admin/approve_subscription/{{ user.id }}" style="display:inline;" onsubmit="return confirm('Approve subscription for {{ user.email }}?');">
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Approve subscription">
+                                                        <i class="fas fa-check"></i> Approve
+                                                    </button>
+                                                </form>
+                                                <form method="post" action="/admin/reject_subscription/{{ user.id }}" style="display:inline; margin-left:5px;" onsubmit="return confirm('Reject subscription request for {{ user.email }}?');">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Reject subscription">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No pending subscription requests.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBSCRIBED USERS -->
+                <div class="tab-pane fade" id="subscribed" role="tabpanel" aria-labelledby="subscribed-tab">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Subscribed Users</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if subscribed_users and subscribed_users|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Parent Name</th>
+                                            <th>Baby Name</th>
+                                            <th>Subscribed Since</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in subscribed_users %}
+                                        <tr>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.parent_name }}</td>
+                                            <td>{{ user.baby_name }}</td>
+                                            <td>{{ user.created_at }}</td>
+                                            <td>
+                                                <form method="post" action="/admin/revoke_subscription/{{ user.id }}" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-warning" title="Revoke subscription" onclick="return confirm('Remove subscription access for this user?');">
+                                                        <i class="fas fa-lock"></i> Revoke
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No subscribed users yet.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALL USERS -->
+                <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all-tab">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">All Users - Subscription Status</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if all_users and all_users|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Parent Name</th>
+                                            <th>Baby Name</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in all_users %}
+                                        <tr>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.parent_name }}</td>
+                                            <td>{{ user.baby_name }}</td>
+                                            <td>
+                                                {% if user.is_subscribed %}
+                                                    <span class="badge bg-success">Subscribed</span>
+                                                {% elif user.subscription_pending %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Not Subscribed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if not user.is_subscribed %}
+                                                    <form method="post" action="/admin/grant_subscription/{{ user.id }}" style="display:inline;" onsubmit="return confirm('Grant subscription access to {{ user.email }}?');">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="Grant subscription access">
+                                                            <i class="fas fa-plus"></i> Grant Access
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form method="post" action="/admin/revoke_subscription/{{ user.id }}" style="display:inline;">
+                                                        <button type="submit" class="btn btn-sm btn-warning" title="Revoke subscription" onclick="return confirm('Remove subscription access for this user?');">
+                                                            <i class="fas fa-minus"></i> Revoke Access
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No users found.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

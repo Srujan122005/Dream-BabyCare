@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Manage Appointments</h2>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body py-2">
+                <form method="GET" action="{{ url_for('admin_appointments') }}" class="row align-items-center g-2">
+                    <div class="col-auto">
+                        <label class="fw-bold mb-0">Filter Status:</label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="All" {% if not current_status or current_status == 'All' %}selected{% endif %}>All</option>
+                            <option value="Pending" {% if current_status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Confirmed" {% if current_status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                            <option value="Completed" {% if current_status == 'Completed' %}selected{% endif %}>Completed</option>
+                            <option value="Cancelled" {% if current_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Parent / User</th>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments %}
+                            <tr>
+                                <td>{{ appt[0] }}</td>
+                                <td>
+                                    <strong>{{ appt[1] }}</strong><br>
+                                    <small class="text-muted">{{ appt[2] }}</small>
+                                </td>
+                                <td>{{ appt[3] }}</td>
+                                <td>{{ appt[4] }}</td>
+                                <td>
+                                    {% if appt[5] == 'Video' %}
+                                    <span class="badge bg-info text-dark"><i class="fas fa-video me-1"></i> Video</span>
+                                    {% else %}
+                                    <span class="badge bg-success"><i class="fas fa-phone me-1"></i> Voice</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if appt[6] == 'Pending' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif appt[6] == 'Confirmed' %}
+                                    <span class="badge bg-primary">Confirmed</span>
+                                    {% elif appt[6] == 'Completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% elif appt[6] == 'Cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ appt[6] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if appt[6] != 'Confirmed' and appt[6] != 'Completed' and appt[6] != 'Cancelled' %}
+                                        <form action="{{ url_for('admin_update_appointment_status', appt_id=appt[0]) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="status" value="Confirmed">
+                                            <button type="submit" class="btn btn-outline-primary" title="Confirm">
+                                                <i class="fas fa-check"></i> Confirm
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                        
+                                        {% if appt[6] == 'Confirmed' %}
+                                        <form action="{{ url_for('admin_update_appointment_status', appt_id=appt[0]) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="status" value="Completed">
+                                            <button type="submit" class="btn btn-outline-success" title="Mark Complete">
+                                                <i class="fas fa-check-double"></i> Complete
+                                            </button>
+                                        </form>
+                                        {% endif %}
+
+                                        {% if appt[6] != 'Cancelled' and appt[6] != 'Completed' %}
+                                        <form action="{{ url_for('admin_update_appointment_status', appt_id=appt[0]) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="status" value="Cancelled">
+                                            <button type="submit" class="btn btn-outline-danger ms-1" title="Cancel" onclick="return confirm('Cancel this appointment?');">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-calendar-times fa-3x mb-3 opacity-50"></i>
+                    <p>No appointments booked yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

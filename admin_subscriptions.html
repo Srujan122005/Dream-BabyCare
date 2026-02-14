@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Subscription Requests - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3>Pending Subscription Requests</h3>
+    {% if requests and requests|length > 0 %}
+    <div class="table-responsive mt-3">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Parent Name</th>
+                    <th>Requested At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in requests %}
+                <tr>
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>
+                        <form method="post" action="/admin/approve_subscription/{{ r[0] }}" style="display:inline-block;">
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+                        <form method="post" action="/admin/reject_subscription/{{ r[0] }}" style="display:inline-block; margin-left:8px;">
+                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No pending subscription requests at the moment.</div>
+    {% endif %}
+</div>
+{% endblock %}
